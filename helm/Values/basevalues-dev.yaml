@@ -1,0 +1,19 @@
+# This file is environment specific base value file
+# Thia file overrides values.yaml
+# This file will be overriden by application specific yaml files
+# Placeholder value is created  - Helm doesn't allow empty value files
+
+placeholderkey: placeholdervalue
+deployment:
+  replicaCount: 2
+  minAvailable: 2
+  livenessProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+
+imagePullSecrets:
+  - name: cornplex-docker
+
+ingress:
+  enabled: false

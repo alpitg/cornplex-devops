@@ -1,0 +1,180 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Must be overwritten at runtime
+nameOverride: ""
+fullnameOverride: ""
+
+deployment:
+  image:
+    # Must be overwritten at runtime
+    repository: dummy
+    # Must be overwritten at runtime
+    tag: dummy
+    pullPolicy: IfNotPresent
+
+  ## Spring profile to pass as ENV Variable to the container
+  # May be overwritten at runtime
+  springProfile: ""
+  mountSpringProfile: false
+
+  revisionHistoryLimit: 10 # This is k8s default
+
+  ## Configuration of the HorizontalPodAutoscaler attached to the deployment
+  ## targetPercentage is out of resource requests
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 90
+
+  ## Resources for each pod
+  resources:
+    requests:
+      cpu: 250m
+      memory: 2Gi
+    limits:
+      #      cpu: 500m
+      memory: 2Gi
+
+  ## Additional environment variables to set
+  extraEnvs:
+  # extraEnvs:
+  #   - name: FOO
+  #     value: BAR
+  #   - name: FOO
+  #     valueFrom:
+  #       secretKeyRef:
+  #         key: FOO
+  #         name: secret-resource
+
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 20%
+      maxSurge: 10%
+    type: RollingUpdate
+
+  # minReadySeconds to avoid killing pods before we are ready
+  minReadySeconds: 30
+
+  ## Node labels for deployment pod assignment
+  nodeSelector: {}
+
+  ## Node tolerations for server scheduling to nodes with taints
+  tolerations: []
+
+  affinity: {}
+
+  # App GW will be configured based on readiness probe only
+  livenessProbe:
+    enabled: true
+    echoCmdCheck: false
+    failureThreshold: 3
+    initialDelaySeconds: 250
+    periodSeconds: 60
+    successThreshold: 1
+    timeoutSeconds: 5
+    port: ""
+    path: /actuator/health
+    appendIngressPath: true
+    httpHeaders: []
+
+  readinessProbe:
+    enabled: true
+    echoCmdCheck: false
+    failureThreshold: 10
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 5
+    port: ""
+    path: /actuator/health
+    appendIngressPath: true
+    httpHeaders: []
+
+  ## Annotations to be added to deployment pods
+  podAnnotations:
+    rollme: "{{ randAlphaNum 5 | quote }}"
+
+  ## Labels to be added to deployment pods
+  podLabels: {}
+
+  replicaCount: 2
+
+  minAvailable: 2
+
+  securityContext:
+    runAsUser: 1000
+    allowPrivilegeEscalation: false
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+  annotations: {}
+  labels: {}
+
+# side car container section #
+#authutility:
+#  repository: dummy
+#  tag: dummy
+#  imagePullPolicy: Always
+#  extraEnvs:
+#  livenessProbe:
+#    enabled: true
+#    echoCmdCheck: true
+#    failureThreshold: 3
+#    initialDelaySeconds: 120
+#    periodSeconds: 30
+#    successThreshold: 1
+#    timeoutSeconds: 5
+#    port: ""
+
+#authutilityservice:
+#  type: ClusterIP
+#  port: ""
+#  targetPort: 1234
+
+ingress:
+  enabled: true
+  # Must be overwritten at runtime
+  path: dummy
+  pathPostfix: /*
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  #  nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  #  nginx.org/hsts: "true"
+  #  nginx.org/server-tokens: "false"
+  #  nginx.org/client-max-body-size: "100m"
+  #  nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+
+  # Must be overwritten at runtime
+  hosts: dummyHost
+  tlsSecretName: tls-secret
+
+# Provision PVC as part of the release lifecycle
+pvc:
+  # - name: -pvc
+  #   mountPath: "/mnt/mma"
+  #   storageClassName: azurefile
+  #   storageRequest: 20Gi
+  #   accessMode: ReadWriteMany
+
+# Mount an independent PVC to the pod
+volumeMounts:
+  # - name: mma
+  #   mountPath: /mnt/mma
+
+imagePullSecrets:
+  # - name: aesonar
+
+imageCredentials:
+  create: false
+  registry: ""
+  username: ""
+  password: ""
+
+serviceAccount:
+  create: false

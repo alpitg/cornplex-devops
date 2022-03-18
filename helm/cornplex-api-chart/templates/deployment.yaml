@@ -39,6 +39,9 @@ spec:
             - name: {{ $name }}
               value: {{ $value | quote}}
             {{- end }}
+            {{- if .Values.deployment.extraEnvs }}
+{{ toYaml .Values.deployment.extraEnvs | indent 12 }}
+            {{- end }}
 
           # env:
           #   - name: ASPNETCORE_URLS
@@ -48,6 +51,7 @@ spec:
       #   - name: cornplex-api-secret
 
 ---
+# NOTE: Only for testing - NOT IN USE
 # This secret is used to set the initial credentials of the container.
 apiVersion: v1
 kind: Secret

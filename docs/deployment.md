@@ -41,7 +41,7 @@ docker run -d -p 5000:80 --name cornplexcontainer cornplex
 - helm create cornplex-api-chart
 - helm lint ./cornplex-api-chart    # validate the chart file
 - helm install --dry-run --debug ./cornplex-api-chart --generate-name   # minikube start - if got error
-- # helm install sample ./cornplex-api-chart --set service.type=NodePort
+ <!-- helm install sample ./cornplex-api-chart --set service.type=NodePort -->
 - helm upgrade --install cornplex-app-release . --namespace=cornplex-app --set image.tag="5000" --debug --dry-run
 - helm upgrade --install cornplex-app-release . --namespace=cornplex-app-dev --set image.tag="5000" --set env.ASPNETCORE_ENVIRONMENT="Development"                                     
 - helm delete cornplex-app-release . --namespace=cornplex-app-dev 

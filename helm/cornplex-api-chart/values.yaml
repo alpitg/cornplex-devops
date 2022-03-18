@@ -1,4 +1,5 @@
-# test-app-api:
+# This file will get override by environment specific base value file
+
 replicaCount: 1
 
 namespace: cornplex-app-dev
@@ -67,6 +68,12 @@ env:
   KeyVault_TenantId: "866a40b9-d4a2-40d2-9e94-ca555a1bfd49"
   KeyVault_ClientId: "20527699-8c12-406d-b7c7-f2faa7dcad52"
   KeyVault_ClientSecret: "6a_7Q~aRYQoe4Sr~vua__S8T4gxNW1Hla_BrF"
+  azure-keyvault-endpoint: "https://az-free-dev.vault.azure.net/"
+  azure-keyvault-tenantId: "866a40b9-d4a2-40d2-9e94-ca555a1bfd49"
+  azure-keyvault-clientId: "20527699-8c12-406d-b7c7-f2faa7dcad52"
+  azure-keyvault-clientSecret: "6a_7Q~aRYQoe4Sr~vua__S8T4gxNW1Hla_BrF"
+
+
   # helm upgrade --install chart_name --name release_name --set env.ASPNETCORE_ENVIRONMENT="Development" --set env.PASSWORD="28sin47dsk9ik"
   # helm upgrade --install cornplex-app-dev . --namespace=cornplex-app-dev --set env.ASPNETCORE_ENVIRONMENT="Development"                                     
 

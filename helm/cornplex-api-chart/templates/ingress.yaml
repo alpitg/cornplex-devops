@@ -1,0 +1,34 @@
+# service - ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+  # labels:
+  #   app: cornplex-app
+spec:
+  rules:
+    - host: ""
+      http:
+        paths:
+          - path: / # Path For UI
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.app }} # this should match your api-service-deployment metadata:name
+                port:
+                  number: 5000
+          - path: /swagger/ # Path For SWAGGER
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.app }} # this should match your api-service-deployment metadata:name
+                port:
+                  number: 5000
+          - path: /api/ # Path For API
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.app }} # this should match your api-service-deployment metadata:name
+                port:
+                  number: 5000

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app }}
+    spec:
+      # securityContext: use securityContext for non-root-user, when we get an error related to user permission
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+        - name: {{ .Values.app }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          ports:
+            - containerPort: {{ .Values.ports.containerPort }}
+          # Environment variable section
+          env:
+            {{- range $name, $value := .Values.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote}}
+            {{- end }}
+
+          # env:
+          #   - name: ASPNETCORE_URLS
+          #     value: http://+:5000
+      # # imagePullSecrets: use imagePullSecrets when we use private container
+      # imagePullSecrets:
+      #   - name: cornplex-api-secret
+
+---
+# This secret is used to set the initial credentials of the container.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.app }}
+    chart: "storageos.chart"
+type: "kubernetes.io/basic-auth"
+# type: Opaque
+    # app: "storageos.name"
+    # chart: "storageos.chart"
+# type: "kubernetes.io/storageos"
+data:
+  username: {{ default "" .Values.secrets.api.username | b64enc | quote }}
+  password: {{ default "" .Values.secrets.api.password | b64enc | quote }}
+  KeyVault: {{ default "" .Values.secrets.api.KeyVault | toJson | b64enc | quote }}

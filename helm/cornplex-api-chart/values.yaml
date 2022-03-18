@@ -1,0 +1,162 @@
+# test-app-api:
+replicaCount: 1
+
+namespace: cornplex-app-dev
+app: cornplex-api-app
+
+image:
+  repository: alpitg/cornplex-api
+  tag: "env"
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+ports:
+  containerPort: 5000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+
+autoscaling:
+  enabled: false
+
+serviceAccount:
+  create: false
+
+# service ---------
+service:
+  type: LoadBalancer # ClusterIP
+  port: 5000
+  targetPort: 5000
+
+# end service ---------
+
+# ingress ---------
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: Prefix
+
+tls: []
+
+
+secrets: 
+  api:
+    username: alpit
+    password: alpit
+    KeyVault: '{ "KeyVault": { "Endpoint": "https://az-free-dev.vault.azure.net/", "TenantId": "866a40b9-d4a2-40d2-9e94-ca555a1bfd49", "ClientId": "20527699-8c12-406d-b7c7-f2faa7dcad52", "ClientSecret": "6a_7Q~aRYQoe4Sr~vua__S8T4gxNW1Hla_BrF" } }'
+
+env:           
+  ASPNETCORE_ENVIRONMENT: "Development"
+  ASPNETCORE_URLS: "http://+:5001"
+  KeyVault_Endpoint: "https://az-free-dev.vault.azure.net/"
+  KeyVault_TenantId: "866a40b9-d4a2-40d2-9e94-ca555a1bfd49"
+  KeyVault_ClientId: "20527699-8c12-406d-b7c7-f2faa7dcad52"
+  KeyVault_ClientSecret: "6a_7Q~aRYQoe4Sr~vua__S8T4gxNW1Hla_BrF"
+  # helm upgrade --install chart_name --name release_name --set env.ASPNETCORE_ENVIRONMENT="Development" --set env.PASSWORD="28sin47dsk9ik"
+  # helm upgrade --install cornplex-app-dev . --namespace=cornplex-app-dev --set env.ASPNETCORE_ENVIRONMENT="Development"                                     
+
+#  - secretName: chart-example-tls
+#    hosts:
+#      - chart-example.local
+
+# end ingress ---------
+
+# -----------------------------
+#
+# # Default values for cornplex-app-api.
+# # This is a YAML-formatted file.
+# # Declare variables to be passed into your templates.
+
+# replicaCount: 1
+
+# image:
+#   repository: nginx
+#   pullPolicy: IfNotPresent
+#   # Overrides the image tag whose default is the chart appVersion.
+#   tag: ""
+
+# imagePullSecrets: []
+# nameOverride: ""
+# fullnameOverride: ""
+
+# serviceAccount:
+#   # Specifies whether a service account should be created
+#   create: true
+#   # Annotations to add to the service account
+#   annotations: {}
+#   # The name of the service account to use.
+#   # If not set and create is true, a name is generated using the fullname template
+#   name: ""
+
+# podAnnotations: {}
+
+# podSecurityContext: {}
+#   # fsGroup: 2000
+
+# securityContext: {}
+#   # capabilities:
+#   #   drop:
+#   #   - ALL
+#   # readOnlyRootFilesystem: true
+#   # runAsNonRoot: true
+#   # runAsUser: 1000
+
+# service:
+#   type: ClusterIP
+#   port: 80
+
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
+#   tls: []
+#   #  - secretName: chart-example-tls
+#   #    hosts:
+#   #      - chart-example.local
+
+# resources: {}
+#   # We usually recommend not to specify default resources and to leave this as a conscious
+#   # choice for the user. This also increases chances charts run on environments with little
+#   # resources, such as Minikube. If you do want to specify resources, uncomment the following
+#   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+#   # limits:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   # requests:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+
+# autoscaling:
+#   enabled: false
+#   minReplicas: 1
+#   maxReplicas: 100
+#   targetCPUUtilizationPercentage: 80
+#   # targetMemoryUtilizationPercentage: 80
+
+# nodeSelector: {}
+
+# tolerations: []
+
+# affinity: {}

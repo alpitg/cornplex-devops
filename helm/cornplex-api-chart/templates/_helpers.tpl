@@ -60,3 +60,11 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+
+{{/*
+Trim trailing slash from ingres.path
+*/}}
+{{- define "cornplex-api-chart.ingressPathClean" -}}
+{{- .Values.ingress.path | trimSuffix "/" -}}
+{{- end -}}

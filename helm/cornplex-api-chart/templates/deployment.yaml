@@ -42,6 +42,66 @@ spec:
             {{- if .Values.deployment.extraEnvs }}
 {{ toYaml .Values.deployment.extraEnvs | indent 12 }}
             {{- end }}
+          {{- if .Values.deployment.livenessProbe.enabled }}
+          livenessProbe:
+            {{- if .Values.deployment.livenessProbe.echoCmdCheck }}
+            exec:
+              command:
+              - echo
+              - echoLivenessCheckHealthy
+            {{- else if .Values.deployment.livenessProbe.path }}
+            httpGet:
+              {{- if .Values.deployment.livenessProbe.appendIngressPath}}
+              path: "{{ include "cornplex-api-chart.ingressPathClean" . }}{{ .Values.deployment.livenessProbe.path }}"
+              {{- else }}
+              path: "{{ .Values.deployment.livenessProbe.path }}"
+              {{- end}}
+              port: {{ default .Values.service.targetPort .Values.deployment.livenessProbe.port }}
+              scheme: HTTP
+              {{- if .Values.deployment.livenessProbe.httpHeaders }}
+              httpHeaders:
+{{ toYaml .Values.deployment.livenessProbe.httpHeaders | indent 16 }}
+              {{- end }}
+            {{- else }}
+            tcpSocket:
+              port: {{ default .Values.service.targetPort .Values.deployment.livenessProbe.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.deployment.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.deployment.livenessProbe.failureThreshold }}
+          {{- end }}
+ {{- if .Values.deployment.readinessProbe.enabled }}
+          readinessProbe:
+            {{- if .Values.deployment.readinessProbe.echoCmdCheck }}
+            exec:
+              command:
+              - echo
+              - echoReadinessCheckHealthy
+            {{- else if .Values.deployment.readinessProbe.path }}
+            httpGet:
+              {{- if .Values.deployment.readinessProbe.appendIngressPath }}
+              path: "{{ include "cornplex-api-chart.ingressPathClean" . }}{{ .Values.deployment.readinessProbe.path }}"
+              {{- else }}
+              path: "{{ .Values.deployment.readinessProbe.path }}"
+              {{- end }}
+              port: {{ default .Values.service.targetPort .Values.deployment.readinessProbe.port }}
+              scheme: HTTP
+              {{- if .Values.deployment.readinessProbe.httpHeaders }}
+              httpHeaders:
+{{ toYaml .Values.deployment.readinessProbe.httpHeaders | indent 16 }}
+              {{- end }}
+            {{- else }}
+            tcpSocket:
+              port: {{ default .Values.service.targetPort .Values.deployment.readinessProbe.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.deployment.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deployment.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.deployment.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.deployment.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.deployment.readinessProbe.failureThreshold }}
+          {{- end }}
 
           # env:
           #   - name: ASPNETCORE_URLS

@@ -44,6 +44,8 @@ service:
 # ingress ---------
 ingress:
   enabled: true
+  # must be overwritten at runtime
+  path: dummy
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: "/"
   hosts:
@@ -88,6 +90,31 @@ deployment:
         secretKeyRef:
           key: Azure-KeyVault-ClientSecret
           name: cornplex-app-secrets
+  # App GW will be configured based on readiness probe only
+  livenessProbe:
+    enabled: true
+    echoCmdCheck: false
+    failureThreshold: 3
+    initialDelaySeconds: 250
+    periodSeconds: 60
+    successThreshold: 1
+    timeoutSeconds: 5
+    port: ""
+    path: /actuator/health
+    appendIngressPath: true
+    httpHeaders: []
+  readinessProbe:
+    enabled: true
+    echoCmdCheck: false
+    failureThreshold: 10
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 5
+    port: ""
+    path: /actuator/health
+    appendIngressPath: true
+    httpHeaders: []
 
   # helm upgrade --install chart_name --name release_name --set env.ASPNETCORE_ENVIRONMENT="Development" --set env.PASSWORD="28sin47dsk9ik"
   # helm upgrade --install cornplex-app-dev . --namespace=cornplex-app-dev --set env.ASPNETCORE_ENVIRONMENT="Development"

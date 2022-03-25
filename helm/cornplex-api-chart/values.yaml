@@ -7,7 +7,7 @@ app: cornplex-api-app
 
 image:
   repository: alpitg/cornplex-api
-  tag: "azurekey"
+  tag: "env-url-1"
   pullPolicy: IfNotPresent
 
 resources:
@@ -65,7 +65,7 @@ secrets:
 
 env:
   ASPNETCORE_ENVIRONMENT: "Development"
-  ASPNETCORE_URLS: "http://+:5001"
+  ASPNETCORE_URLS: "http://+:5000"
 
 # more secured
 deployment:

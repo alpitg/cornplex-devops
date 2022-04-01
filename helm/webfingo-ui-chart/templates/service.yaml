@@ -1,0 +1,31 @@
+# # service - ClusterIP
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: {{ .Values.app }}
+#   namespace: {{ .Values.namespace }}
+#   labels:
+#     app: {{ .Values.app }}
+# spec:
+#   type: ClusterIP
+#   selector:
+#     app: {{ .Values.app }}
+#   ports:
+#     - protocol: TCP
+#       port: 5000
+#       targetPort: 5000
+# ---
+
+# service - loadbalancer - for testing
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ .Values.app }}
+  ports:
+    - port:  {{ .Values.service.port }}
+      targetPort:  {{ .Values.service.targetPort }}

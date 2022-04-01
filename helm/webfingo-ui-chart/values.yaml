@@ -3,12 +3,12 @@
 replicaCount: 1
 
 namespace: cornplex-app-dev
-app: cornplex-api-app
+app: webfingo-app
 
 image:
-  repository: alpitg/cornplex-api
-  tag: "azurekey"
-  pullPolicy: IfNotPresent
+  repository: alpitg/webfingo-ui
+  tag: "0008"
+  pullPolicy: Always
 
 resources:
   requests:
@@ -19,7 +19,7 @@ resources:
     memory: 128Mi
 
 ports:
-  containerPort: 5000
+  containerPort: 4200
 
 securityContext:
   runAsNonRoot: true
@@ -36,8 +36,8 @@ serviceAccount:
 # service ---------
 service:
   type: LoadBalancer # ClusterIP
-  port: 5000
-  targetPort: 5000
+  port: 4200
+  targetPort: 4200
 
 # end service ---------
 
@@ -63,9 +63,9 @@ secrets:
     password: alpit
     KeyVault: '{ "KeyVault": { "Endpoint": "https://az-free-dev.vault.azure.net/", "TenantId": "866a40b9-d4a2-40d2-9e94-ca555a1bfd49", "ClientId": "20527699-8c12-406d-b7c7-f2faa7dcad52", "ClientSecret": "6a_7Q~aRYQoe4Sr~vua__S8T4gxNW1Hla_BrF" } }'
 
-env:
-  ASPNETCORE_ENVIRONMENT: "Development"
-  ASPNETCORE_URLS: "http://+:5001"
+# env:
+#   ASPNETCORE_ENVIRONMENT: "Development"
+#   ASPNETCORE_URLS: "http://+:4200"
 
 # more secured
 deployment:
@@ -90,6 +90,14 @@ deployment:
         secretKeyRef:
           key: Azure-KeyVault-ClientSecret
           name: cornplex-app-secrets
+  volumeMounts:
+    - mountPath: /etc/nginx/conf.d/
+      name: nginx-dir
+    - mountPath: /var/cache/nginx/client_temp
+      name: nginx-empty
+    - mountPath: /var/run/
+      name: nginx-run
+
   # App GW will be configured based on readiness probe only
   livenessProbe:
     enabled: true
@@ -115,6 +123,14 @@ deployment:
     path: /actuator/health
     appendIngressPath: true
     httpHeaders: []
+
+volumes:
+  - name: nginx-dir
+    emptyDir: {}
+  - name: nginx-empty
+    emptyDir: {}
+  - name: nginx-run
+    emptyDir: {}
 
   # helm upgrade --install chart_name --name release_name --set env.ASPNETCORE_ENVIRONMENT="Development" --set env.PASSWORD="28sin47dsk9ik"
   # helm upgrade --install cornplex-app-dev . --namespace=cornplex-app-dev --set env.ASPNETCORE_ENVIRONMENT="Development"

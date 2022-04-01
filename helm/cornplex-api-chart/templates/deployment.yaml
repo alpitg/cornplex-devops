@@ -43,6 +43,15 @@ spec:
 {{ toYaml .Values.deployment.extraEnvs | indent 12 }}
             {{- end }}
           {{- if .Values.deployment.livenessProbe.enabled }}
+          volumeMounts:
+            {{- if .Values.deployment.volumeMounts }}
+{{ toYaml .Values.deployment.volumeMounts | indent 12}}
+            {{- end }}
+      volumes:
+      {{- if .Values.volumes }}
+{{ toYaml .Values.volumes | indent 8}}
+      {{- end }}
+
 #           livenessProbe:
 #             {{- if .Values.deployment.livenessProbe.echoCmdCheck }}
 #             exec:
